@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
@@ -16,15 +16,6 @@ const PostJob = ({ userInfo }) => {
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // If not employer, redirect out
-    if (!userInfo) {
-      navigate('/login?redirect=post-job');
-    } else if (userInfo.role !== 'employer') {
-      navigate('/dashboard');
-    }
-  }, [userInfo, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

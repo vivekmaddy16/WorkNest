@@ -22,6 +22,12 @@ const Register = ({ userInfo, onLogin }) => {
     setLoading(true);
     setError('');
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data } = await api.post('/auth/register', { name, email, password, role });
       onLogin(data);
@@ -73,9 +79,20 @@ const Register = ({ userInfo, onLogin }) => {
               required
               className="form-input"
               placeholder="Minimum 6 characters"
+              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {password.length > 0 && password.length < 6 && (
+              <div style={{ fontSize: '11px', color: '#D97706', marginTop: '6px', fontWeight: '500' }}>
+                ⚠️ Password must be at least 6 characters ({6 - password.length} more needed)
+              </div>
+            )}
+            {password.length >= 6 && (
+              <div style={{ fontSize: '11px', color: '#1A7A5E', marginTop: '6px', fontWeight: '500' }}>
+                ✓ Password length is good
+              </div>
+            )}
           </div>
 
           <div className="form-group">

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getJobs, getJobById, createJob } from '../controllers/jobsController.js';
+import { getJobs, getJobById, createJob, deleteJob } from '../controllers/jobsController.js';
 import { protect, employerOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.route('/')
   .post(protect, employerOnly, createJob);
 
 router.route('/:id')
-  .get(getJobById);
+  .get(getJobById)
+  .delete(protect, employerOnly, deleteJob);
 
 export default router;

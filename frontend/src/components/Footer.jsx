@@ -9,9 +9,9 @@ const Footer = () => {
           <div className="logo">WorkNest ●</div>
           <p>The next step in your career journey. WorkNest bridges top talent with great companies, making hiring smarter for everyone.</p>
           <div className="social-row">
-            <a className="social-btn" href="#">in</a>
-            <a className="social-btn" href="#">tw</a>
-            <a className="social-btn" href="#">gh</a>
+            <a className="social-btn" href="#" aria-label="LinkedIn">in</a>
+            <a className="social-btn" href="#" aria-label="Twitter">tw</a>
+            <a className="social-btn" href="#" aria-label="GitHub">gh</a>
           </div>
         </div>
         <div className="footer-col">
@@ -43,7 +43,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© 2025 WorkNest. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} WorkNest. All rights reserved.</p>
         <p>Built with ❤️ for Indian job seekers</p>
       </div>
     </footer>

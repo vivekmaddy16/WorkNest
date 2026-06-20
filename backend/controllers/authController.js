@@ -13,8 +13,35 @@ const generateToken = (id) => {
 export const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
+  // Input validation
+  if (!name || !email || !password) {
+    res.status(400).json({ message: 'Please provide name, email, and password' });
+    return;
+  }
+
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim().toLowerCase();
+
+  if (trimmedName.length < 2) {
+    res.status(400).json({ message: 'Name must be at least 2 characters' });
+    return;
+  }
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(trimmedEmail)) {
+    res.status(400).json({ message: 'Please provide a valid email address' });
+    return;
+  }
+
+  // Password strength validation
+  if (password.length < 6) {
+    res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    return;
+  }
+
   try {
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: trimmedEmail });
 
     if (userExists) {
       res.status(400).json({ message: 'User already exists' });
@@ -22,8 +49,8 @@ export const registerUser = async (req, res) => {
     }
 
     const user = await User.create({
-      name,
-      email,
+      name: trimmedName,
+      email: trimmedEmail,
       password,
       role: role || 'candidate',
     });
@@ -50,8 +77,13 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    res.status(400).json({ message: 'Please provide email and password' });
+    return;
+  }
+
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
 
     if (user && (await user.matchPassword(password))) {
       res.json({

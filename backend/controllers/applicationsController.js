@@ -5,7 +5,28 @@ import Job from '../models/Job.js';
 // @route   POST /api/applications
 // @access  Private/Candidate
 export const applyToJob = async (req, res) => {
+  // Only candidates can apply
+  if (req.user.role !== 'candidate') {
+    res.status(403).json({ message: 'Only candidates can apply for jobs' });
+    return;
+  }
+
   const { jobId, resumeUrl, coverLetter } = req.body;
+
+  if (!jobId) {
+    res.status(400).json({ message: 'Job ID is required' });
+    return;
+  }
+
+  // Validate resume URL format if provided
+  if (resumeUrl && resumeUrl.trim()) {
+    try {
+      new URL(resumeUrl);
+    } catch {
+      res.status(400).json({ message: 'Please provide a valid resume URL' });
+      return;
+    }
+  }
 
   try {
     const job = await Job.findById(jobId);

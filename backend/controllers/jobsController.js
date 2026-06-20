@@ -52,18 +52,34 @@ export const getJobById = async (req, res) => {
 export const createJob = async (req, res) => {
   const { title, company, companyLogo, location, salary, category, experience, type, jobDuration, description } = req.body;
 
+  // Validate required fields
+  if (!title || !company || !location || !salary || !category || !experience || !description) {
+    res.status(400).json({ message: 'Please fill in all required fields' });
+    return;
+  }
+
+  if (title.trim().length < 3 || title.trim().length > 100) {
+    res.status(400).json({ message: 'Job title must be between 3 and 100 characters' });
+    return;
+  }
+
+  if (description.trim().length < 20) {
+    res.status(400).json({ message: 'Description must be at least 20 characters' });
+    return;
+  }
+
   try {
     const job = new Job({
-      title,
-      company,
+      title: title.trim(),
+      company: company.trim(),
       companyLogo,
-      location,
-      salary,
+      location: location.trim(),
+      salary: salary.trim(),
       category,
-      experience,
+      experience: experience.trim(),
       type,
       jobDuration,
-      description,
+      description: description.trim(),
       postedBy: req.user._id
     });
 
@@ -71,5 +87,30 @@ export const createJob = async (req, res) => {
     res.status(201).json(createdJob);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Delete a job posting
+// @route   DELETE /api/jobs/:id
+// @access  Private/Employer
+export const deleteJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      res.status(404).json({ message: 'Job not found' });
+      return;
+    }
+
+    // Ensure only the employer who posted the job can delete it
+    if (job.postedBy.toString() !== req.user._id.toString()) {
+      res.status(403).json({ message: 'Not authorized to delete this job' });
+      return;
+    }
+
+    await Job.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Job listing deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
